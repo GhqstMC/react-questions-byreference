@@ -1,7 +1,6 @@
 import { Fragment, useState } from 'react'
 import './App.css'
 import { formatQuestionType, Question, QuestionType } from './questions/types'
-import syllables from 'nlp-syllables/src/syllables.js'
 import { renderSyllables } from './questions/syllables'
 import { motion } from 'framer-motion'
 import { copyTextToClipboard } from './utils/copy.js'
@@ -29,25 +28,44 @@ const variants = {
     }
 }
 
+const quoteTest: Question = {
+    type: QuestionType.QUOTE,
+    prefix: 'Quote Acts,',
+    contentPrefix: '',
+    content: 'chapter one, verse eight',
+    contentSuffix: '',
+    answer: '"But you will receive power when the Holy Spirit comes on you; and you will be my witnesses in Jerusalem, and in all Judea and Samaria, and to the ends of the earth.""',
+    reference: { formatted: 'Acts 1:8', book: 'Acts', chapter: 1, verse: 8 },
+    syllables: [ [ 'chap', 'ter' ], [ 'one,' ], [ 'verse' ], [ 'ei', 'ght' ] ]
+}
+
+const accordingToTest: Question = {
+    type: QuestionType.ACCORDING_TO,
+    prefix: 'According to Acts',
+    contentPrefix: '',
+    content: 'chapter one, verse one, who began to teach',
+    contentSuffix: '',
+    answer: 'Jesus',
+    reference: { formatted: 'Acts 1:1', book: 'Acts', chapter: 1, verse: 1 },
+    syllables: [
+        [ 'chap', 'ter' ],
+        [ 'o', 'ne,' ],
+        [ 'verse' ],
+        [ 'o', 'ne,' ],
+        [ 'who' ],
+        [ 'be', 'gan' ],
+        [ 'to' ],
+        [ 'teach' ]
+    ]
+
+}
+
+
+
 
 function App() {
 
-    const [question, setQuestion] = useState<Question>({
-        type: QuestionType.GENERAL,
-        prefix: 'Situation question: Who said it, to whom, and about whom?',
-        content: 'I will show him how much he must suffer for my name.',
-        contentPrefix: '"',
-        contentSuffix: '"',
-        syllables: syllables('I will show him how much he must suffer for my name.'),
-        answer: 'The Lord said it to Ananias about Saul.',
-        reference: {
-            formatted: 'Acts 9:16',
-            book: 'Acts',
-            chapter: 9,
-            verse: 16
-        }
-
-    })
+    const [question, setQuestion] = useState<Question>(accordingToTest)
 
     const [syllableCount, setSyllableCount] = useState(1)
 
@@ -101,20 +119,20 @@ function App() {
                         >
 
                             <div className={`col-span-full row-span-full lg:py-4 xl:py-8 opacity-0`}>
-                                <li className="px-4 py-4 pb-2 sm:px-6 text-center question-text">
+                                {question.prefix.length > 0 && <li className="px-4 py-4 pb-1 sm:px-6 lg:-mb-4 xl:mb-0 text-center question-text-header">
                                     {question.prefix}
-                                </li>
-                                <li className="px-4 pt-2 pb-5 sm:px-6 text-center question-text">
+                                </li>}
+                                <li className="px-4 pt-1 lg:pt-4 pb-5 sm:px-6 text-center question-text">
                                     {question.contentPrefix + question.content + question.contentSuffix}
                                 </li>
                             </div>
 
                             <motion.div layout
                                         className={`col-span-full row-span-full lg:py-4 xl:py-8 ${answerVisible && 'opacity-0'}`}>
-                                <li className="px-4 py-4 pb-2 sm:px-6 text-center question-text">
+                                {question.prefix.length > 0 && <li className="px-4 py-4 pb-1 sm:px-6 lg:-mb-4 xl:mb-0 text-center question-text-header">
                                     {question.prefix}
-                                </li>
-                                <li className="px-4 pt-2 pb-4 sm:px-6 text-center question-text">
+                                </li>}
+                                <li className="px-4 pt-1 lg:pt-4 pb-6 sm:px-6 text-center question-text">
                                     {renderSyllables(question, syllableCount)}
                                 </li>
                             </motion.div>
@@ -129,9 +147,9 @@ function App() {
 
                         </motion.div>
 
-                        <li className="px-4 sm:px-6 lg:py-2 text-center text-sm lg:text-3xl font-light relative">
+                        <li className="px-4 sm:px-6 lg:py-2 text-center text-sm lg:text-xl xl:text-2xl font-light relative">
                         <span
-                            className="text-xs lg:text-xl absolute -top-[1.2rem] lg:-top-[2rem] left-0 right-0 mx-auto select-none cursor-pointer text-gray-300 bg-transparent"
+                            className="text-xs lg:text-lg absolute -top-[1.2rem] lg:-top-[2rem] left-0 right-0 mx-auto select-none cursor-pointer text-gray-300 bg-transparent"
                             onClick={() => copyCurrentText()}>{copied ? 'COPIED' : 'COPY'}</span>
                             <span className="py-0.5">{formatQuestionType(question.type)}</span>
                         </li>
