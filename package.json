@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.4",
+    "@heroicons/react": "^2.0.13",
     "framer-motion": "^7.6.7",
     "nlp-syllables": "^0.0.5",
     "react": "^18.2.0",

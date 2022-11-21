@@ -3,3 +3,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.question-text {
+    @apply text-xl md:text-xl lg:text-3xl xl:text-6xl
+}
+
+.button-icon {
+    @apply h-5 w-5 lg:h-10 lg:w-10
+}

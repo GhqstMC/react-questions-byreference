@@ -31,7 +31,7 @@ export function renderSyllables(question: Question, index: number): string {
     if (words[0] instanceof Array) {
         words.forEach((syllables) => {
             // @ts-ignore
-            syllables[syllables.length - 1] += ' '
+            if (!syllables[syllables.length - 1].endsWith(' ')) syllables[syllables.length - 1] += ' '
         })
 
         words = words.flat()
@@ -45,7 +45,7 @@ export function renderSyllables(question: Question, index: number): string {
         str += question.contentSuffix
     }
 
-    return str
+    return str.trimEnd()
 }
 
 // nlp.plugin(syllables)
