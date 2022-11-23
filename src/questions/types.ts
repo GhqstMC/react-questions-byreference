@@ -29,6 +29,7 @@ export type ReferenceMultiple = {
 }
 
 export type Question = {
+    tag: string
     type: QuestionType
     prefix: string
     contentPrefix: string // Something like a quotation mark that comes before first word but not in prefix area

@@ -3,8 +3,13 @@ import * as csv from '@fast-csv/parse'
 import * as fs from 'node:fs'
 import { Question, QuestionType } from './src/questions/types.js'
 import nlp from 'compromise'
+import { MongoClient } from 'mongodb'
 
-const rows: Question[] = new Array(3326)
+const uri = ''
+const client = new MongoClient(uri)
+
+
+const rows: Question[] = []
 
 type Row = {
     Id: string
@@ -116,11 +121,18 @@ const parseType = (input: string): QuestionType => {
 const parseVerse = (verse: string): number | number[] => {
     if (verse.includes('-')) {
         const [start, end] = verse.split('-')
-        let arr = new Array(parseInt(end) - parseInt(start) + 1)
-        for (let i = parseInt(start); i <= parseInt(end); i++) {
-            arr[i - parseInt(start)] = i
+        try {
+            let arr = new Array(parseInt(end) - parseInt(start) + 1)
+            for (let i = parseInt(start); i <= parseInt(end); i++) {
+                arr[i - parseInt(start)] = i
+            }
+            return arr
+        } catch (e) {
+            console.log(e)
+            console.log(verse)
+            client.close().then(() => process.exit(1))
         }
-        return arr
+
     } else if (verse.includes(',')) {
         return verse.split(',').map((v) => parseInt(v))
     } else {
@@ -245,35 +257,67 @@ const parsePrefixes = (question: string): {
 // console.log(syllables('Quote Acts, Chapter 5, verses 8 through ?d it, and to whom: "This is a test"'))
 
 function addToRows(row: Question) {
-    if (rows.findIndex(r => r != null && r.content === row.content) === -1) {
-        rows.push(row)
+    rows.push(row)
+    // if (rows.findIndex(r => r != null && r.content === row.content) === -1) {
+    //    
+    // } else {
+    //     console.log('Duplicate question found: ' + row.content)
+    // }
+}
+
+async function run() {
+    try {
+        await client.connect()
+
+        await client.db('questions').command({ 
+            killAllSessions: [
+                { user: 'byref' }
+            ]
+        })
+        console.log('Connected successfully to server')
+
+        let index = 0
+
+        return
+
+        fs.createReadStream('all questions no quotes.csv')
+            .pipe(csv.parse({headers: true}))
+            .on('error', error => console.error(error))
+            .on('data', (row: Row) => {
+                const prefixes = parsePrefixes(row.Question)
+                // console.log(++index)
+                addToRows({
+                    tag: Math.random().toString(36).substring(2, 6) + Math.random().toString(36).substring(2, 6),
+                    type: parseType(row.Type),
+                    prefix: prefixes.prefix,
+                    contentPrefix: prefixes.contentPrefix,
+                    content: prefixes.content,
+                    contentSuffix: prefixes.contentSuffix,
+                    answer: row.Answer.replace('. . . ', '...'),
+                    reference: {
+                        formatted: row.Reference,
+                        book: row.Book,
+                        chapter: parseInt(row.Chapter),
+                        verse: parseVerse(row.Verse)
+                    },
+                    syllables: syllablesButWeird(prefixes.content)
+                })
+            })
+            .on('end', rowCount => {
+                console.log(`Parsed ${rowCount} rows`)
+                // console.log(`Added ${totalAdded} rows`)
+                console.log(`Total ${rows.length} length`)
+                console.log(rows.filter((r) => r.type === QuestionType.ACCORDING_TO)[0])
+                // client.connect().then(() => {
+                //     client.db('questions').collection('questions').insertMany(rows)
+                // })
+            })
+    } finally {
+        await client.close()
     }
 }
 
-fs.createReadStream('all questions.csv')
-    .pipe(csv.parse({headers: true}))
-    .on('error', error => console.error(error))
-    .on('data', (row: Row) => {
-        const prefixes = parsePrefixes(row.Question)
-        addToRows({
-            type: parseType(row.Type),
-            prefix: prefixes.prefix,
-            contentPrefix: prefixes.contentPrefix,
-            content: prefixes.content,
-            contentSuffix: prefixes.contentSuffix,
-            answer: row.Answer.replace('. . . ', '...'),
-            reference: {
-                formatted: row.Reference,
-                book: row.Book,
-                chapter: parseInt(row.Chapter),
-                verse: parseVerse(row.Verse)
-            },
-            syllables: syllablesButWeird(prefixes.content)
-        })
-    })
-    .on('end', rowCount => {
-        console.log(`Parsed ${rowCount} rows`)
-        console.log(`Total ${rows.length} length`)
-        console.log(rows.filter((r) => r.type === QuestionType.ACCORDING_TO)[0])
-    })
+run()
+    .then(() => console.log('done'))
+    .catch(console.dir)
 
