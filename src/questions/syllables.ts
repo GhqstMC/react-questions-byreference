@@ -4,6 +4,7 @@ import { Question, QuestionType } from './types.js'
 const test = syllables('Through your offspring all peoples on earth will be blessed.')
 
 const question: Question = {
+    tag: "",
     type: QuestionType.SITUATION,
     prefix: 'Situation question: Who said it, to whom, and about whom?',
     content: 'I will show him how much he must suffer for my name.',
@@ -43,6 +44,13 @@ export function renderSyllables(question: Question, index: number): string {
 
     if (index >= words.length) {
         str += question.contentSuffix
+    }
+    
+    if (str.endsWith('" "')) {
+        str = str.slice(0, -2)
+    }
+    if (str.endsWith(' "')) {
+        str = str.slice(0, -2) + '"'
     }
 
     return str.trimEnd()

@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+/*@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');*/
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 .question-text {
-    @apply text-xl md:text-2xl lg:text-3xl xl:text-6xl
+    @apply text-xl md:text-2xl lg:text-3xl xl:text-6xl leading-loose
 }
 
 .question-text-header {

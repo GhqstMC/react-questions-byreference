@@ -39,3 +39,8 @@ export type Question = {
     reference: ReferenceMultiple
     syllables: Array<string> | Array<string[]>
 }
+
+export type QuestionFilter = {
+    type?: QuestionType[]
+    chapter?: string
+}
