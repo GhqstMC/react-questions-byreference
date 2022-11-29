@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 .question-text {
-    @apply text-xl md:text-2xl lg:text-3xl xl:text-6xl leading-loose
+    @apply text-xl md:text-2xl lg:text-3xl xl:text-6xl leading-relaxed
 }
 
 .question-text-header {

@@ -105,8 +105,8 @@ function Questions() {
             <div className="bg-lgray-900 w-full h-screen font-outfit flex">
                 <div
                     className="bg-lgray-800 shadow overflow-x-hidden rounded-md text-white w-full sm:w-1/2 mt-5 mb-5 mr-2 ml-2 sm:m-auto">
-                    <ul role="list" className="divide-y divide-lgray-750">
-                        <motion.div layout className="min-h-[500px] grid grid-cols-1 grid-rows-1 leading-loose"
+                    <ul role="list" className="divide-y divide-lgray-750 leading-relaxed">
+                        <motion.div layout className="grid grid-cols-1 grid-rows-1"
                                     drag="x" dragSnapToOrigin={true}
                                     dragConstraints={{left: 0, right: 0}}
                                     dragElastic={0.4}

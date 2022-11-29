@@ -3,10 +3,11 @@ import * as csv from '@fast-csv/parse'
 import * as fs from 'node:fs'
 import { Question, QuestionType } from './src/questions/types.js'
 import nlp from 'compromise'
-import { MongoClient } from 'mongodb'
-
-const uri = ''
-const client = new MongoClient(uri)
+import rita from 'rita'
+// import { MongoClient } from 'mongodb'
+//
+// const uri = ''
+// const client = new MongoClient(uri)
 
 
 const rows: Question[] = []
@@ -130,7 +131,7 @@ const parseVerse = (verse: string): number | number[] => {
         } catch (e) {
             console.log(e)
             console.log(verse)
-            client.close().then(() => process.exit(1))
+            // client.close().then(() => process.exit(1))
         }
 
     } else if (verse.includes(',')) {
@@ -267,18 +268,10 @@ function addToRows(row: Question) {
 
 async function run() {
     try {
-        await client.connect()
-
-        await client.db('questions').command({ 
-            killAllSessions: [
-                { user: 'byref' }
-            ]
-        })
-        console.log('Connected successfully to server')
+        // await client.connect()
+        // console.log('Connected successfully to server')
 
         let index = 0
-
-        return
 
         fs.createReadStream('all questions no quotes.csv')
             .pipe(csv.parse({headers: true}))
@@ -307,13 +300,15 @@ async function run() {
                 console.log(`Parsed ${rowCount} rows`)
                 // console.log(`Added ${totalAdded} rows`)
                 console.log(`Total ${rows.length} length`)
-                console.log(rows.filter((r) => r.type === QuestionType.ACCORDING_TO)[0])
+                const row = rows.filter((r) => r.type === QuestionType.ACCORDING_TO)[0]
+                console.log(row)
+                console.log(rita.analyze(row.content))
+                console.log(rita.rhymes('orange'))
                 // client.connect().then(() => {
                 //     client.db('questions').collection('questions').insertMany(rows)
                 // })
             })
     } finally {
-        await client.close()
     }
 }
 
